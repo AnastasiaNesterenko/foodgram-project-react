@@ -1,5 +1,6 @@
 import datetime
 import io
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import HttpResponse, get_object_or_404
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -11,14 +12,13 @@ from rest_framework.response import Response
 
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag)
-from .mixins import CustomModel
 from .permissions import IsAdminOrReadOnly
 from .serializers import (FavoriteRecipeSerializer, IngredientSerializer,
                           RecipeSerializer, ShoppingCartSerializer,
                           TagSerializer)
 
 
-class RecipeViewSet(CustomModel, viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
@@ -26,6 +26,22 @@ class RecipeViewSet(CustomModel, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        if serializer.instance.author != self.request.user:
+            raise PermissionDenied(
+                'У вас недостаточно прав '
+                'для выполнения данного действия.'
+            )
+        super().perform_update(serializer)
+
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise PermissionDenied(
+                'У вас недостаточно прав '
+                'для выполнения данного действия.'
+            )
+        super().perform_destroy(instance)
 
 
 class TagViewSet(viewsets.ModelViewSet):
