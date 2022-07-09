@@ -1,17 +1,16 @@
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import Recipe
 from users.models import User, Follow
 
 
-class CustomUserCreateSerializer(UserSerializer):
+class CustomUserCreateSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+        fields = ('email', 'id', 'password', 'username', 'first_name', 'last_name')
 
 
 class CustomUserSerializer(UserSerializer):
