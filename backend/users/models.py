@@ -1,8 +1,5 @@
-# from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager, UserManager
 from django.db import models
-
-# User = get_user_model()
 
 
 class User(AbstractUser):
