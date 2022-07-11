@@ -14,7 +14,8 @@ from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import (FavoriteRecipeSerializer, IngredientSerializer,
                           RecipeSerializer, CartSerializer,
-                          TagSerializer)
+                          TagSerializer, RecipeListSerializer)
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
@@ -22,8 +23,48 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     permission_classes = (IsOwnerOrReadOnly,)
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return RecipeListSerializer
+        return RecipeSerializer
+
+    @staticmethod
+    def post_method_for_actions(request, pk, serializers):
+        data = {'user': request.user.id, 'recipe': pk}
+        serializer = serializers(data=data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def delete_method_for_actions(request, pk, model):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+        model_obj = get_object_or_404(model, user=user, recipe=recipe)
+        model_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["POST"],
+            permission_classes=[IsAuthenticated])
+    def favorite(self, request, pk):
+        return self.post_method_for_actions(
+            request=request, pk=pk, serializers=FavoriteRecipeSerializer)
+
+    @favorite.mapping.delete
+    def delete_favorite(self, request, pk):
+        return self.delete_method_for_actions(
+            request=request, pk=pk, model=FavoriteRecipe)
+
+    @action(detail=True, methods=["POST"],
+            permission_classes=[IsAuthenticated])
+    def shopping_cart(self, request, pk):
+        return self.post_method_for_actions(
+            request=request, pk=pk, serializers=CartSerializer)
+
+    @shopping_cart.mapping.delete
+    def delete_shopping_cart(self, request, pk):
+        return self.delete_method_for_actions(
+            request=request, pk=pk, model=Cart)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -38,77 +79,21 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class FavoriteRecipeApiView(views.APIView):
-    permission_classes = (IsAuthenticated, )
-
-    def post(self, request, recipe_id):
-        user = request.user
-
-        data = {
-            'recipe': recipe_id,
-            'user': user.id,
-        }
-        serializer = FavoriteRecipeSerializer(data=data,
-                                        context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, recipe_id):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        FavoriteRecipe.objects.filter(user=user, recipe=recipe).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ShoppingApiView(views.APIView):
-    permission_classes = (IsAuthenticated, )
-
-    def post(self, request, recipe_id):
-        user = request.user
-        data = {
-            'recipe': recipe_id,
-            'user': user.id
-        }
-        context = {'request': request}
-        serializer = CartSerializer(data=data,
-                                            context=context)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, recipe_id):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class DownloadShoppingCart(views.APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
         final_list = {}
-        # так тут же есть values_list или как-то по другому должно реализовываться? и с .annotate(total=Sum('amount')) не поняла
         ingredients = IngredientAmount.objects.filter(
-             recipe__cart__user=request.user).values_list(
+             recipe__cart__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit',
-            'amount'
-        )
+        ).annotate(total=Sum('amount')).order_by('ingredient__name')
         for item in ingredients:
-            name = item[0]
-            if name not in final_list:
-                final_list[name] = {
-                    'measurement_unit': item[1],
-                    'amount': item[2]
-                }
-            else:
-                final_list[name]['amount'] += item[2]
-        # final_list = '\n'.join([
-        #     f'{ingredient["ingredients__name"]} - {ingredient["total"]} '
-        #     f'{ingredient["ingredients__measurement_unit"]}'
-        #     for ingredient in ingredients
-        # ])
+            name = item['ingredient__name']
+            final_list[name] = {
+                'measurement_unit': item['ingredient__measurement_unit'],
+                'total': item['total']
+            }
         pdfmetrics.registerFont(
             TTFont('RussianPunk', 'data/RussianPunk.ttf', 'UTF-8'))
         response = HttpResponse(content_type='application/pdf')
@@ -120,7 +105,7 @@ class DownloadShoppingCart(views.APIView):
         page.setFont('RussianPunk', size=16)
         height = 750
         for i, (name, data) in enumerate(final_list.items(), 1):
-            page.drawString(75, height, (f'{i}. {name} - {data["amount"]} '
+            page.drawString(75, height, (f'{i}. {name} - {data["total"]} '
                                          f'{data["measurement_unit"]}'))
             height -= 25
         page.showPage()
