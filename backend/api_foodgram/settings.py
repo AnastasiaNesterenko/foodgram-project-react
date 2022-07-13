@@ -17,7 +17,7 @@ SECRET_KEY = os.getenv(
 )
 
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -75,9 +75,9 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER',
                           default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD',
-                              default='Zemlya67L'),
+                              default='postgres'),
         'HOST': os.getenv('DB_HOST',
-                          default='localhost'),
+                          default='db'),
         'PORT': os.getenv('DB_PORT',
                           default='5432')
     }
