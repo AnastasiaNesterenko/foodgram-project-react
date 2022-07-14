@@ -9,16 +9,12 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from .serializers import (CartSerializer, FavoriteRecipeSerializer,
+                          IngredientSerializer, RecipeListSerializer,
+                          RecipeSerializer, TagSerializer)
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             IngredientAmount, Cart, Tag)
-from .permissions import IsAdminOrReadOnly
-from .permissions import IsOwnerOrReadOnly
-from .serializers import CartSerializer
-from .serializers import FavoriteRecipeSerializer
-from .serializers import IngredientSerializer
-from .serializers import RecipeListSerializer
-from .serializers import RecipeSerializer
-from .serializers import TagSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

@@ -5,9 +5,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from .models import User, Follow
-from .serializers import CustomUserCreateSerializer
-from .serializers import FollowSerializer
+from users.models import User, Follow
+from users.serializers import CustomUserCreateSerializer, FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
