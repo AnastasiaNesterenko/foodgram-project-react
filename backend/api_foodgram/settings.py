@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -9,8 +8,7 @@ load_dotenv(dotenv_path=env_path)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '=^8!zct5d1mp8ao_zn@(7ps!m57t)&gl^@2u8^9(8ico%^5_=9'
+
 SECRET_KEY = os.getenv(
     'SECRET_KEY',
     default='=^8!zct5d1mp8ao_zn@(7ps!m57t)&gl^@2u8^9(8ico%^5_=9'

@@ -1,12 +1,13 @@
 from djoser.views import UserViewSet
-from rest_framework import permissions, status, viewsets, filters, views
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework import permissions, status, views
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from .models import User, Follow
-from .serializers import (CustomUserSerializer,
-                          FollowSerializer, CustomUserCreateSerializer)
+from .serializers import CustomUserCreateSerializer
+from .serializers import FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
