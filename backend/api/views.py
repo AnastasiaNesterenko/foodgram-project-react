@@ -1,8 +1,10 @@
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
+
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
+
 from rest_framework import viewsets, views, status
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -85,10 +87,9 @@ class DownloadShoppingCart(views.APIView):
     def get(self, request):
         final_list = {}
         ingredients = IngredientAmount.objects.filter(
-             recipe__cart__user=request.user
-        ).values(
-            'ingredient__name', 'ingredient__measurement_unit',
-        ).annotate(total=Sum('amount')).order_by('ingredient__name')
+            recipe__cart__user=request.user).values(
+            'ingredient__name', 'ingredient__measurement_unit').annotate(
+            total=Sum('amount')).order_by('ingredient__name')
         for item in ingredients:
             name = item['ingredient__name']
             final_list[name] = {
