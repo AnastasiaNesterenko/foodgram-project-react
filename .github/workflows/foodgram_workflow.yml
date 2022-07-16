@@ -59,6 +59,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
           sudo docker-compose stop
           sudo docker-compose rm backend
           rm .env
