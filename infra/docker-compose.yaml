@@ -9,18 +9,16 @@ services:
       - ./.env
 
   frontend:
-    image: greengnom1/foodgram_fronted:v13.07.2022
+    image: greengnom1/foodgram_frontend:v13.07.2022
     ports:
       - "80:80"
     volumes:
-      - ..fronted/:/app/result_build/
+      - ../frontend/:/app/result_build/
     depends_on:
       - db
 
   backend:
     image: greengnom1/foodgram_backend:latest
-    expose:
-      - 8000
     restart: always
     volumes:
       - static_value:/app/static/
@@ -43,7 +41,7 @@ services:
     restart: always
     depends_on:
       - backend
-      - fronted
+      - frontend
       
 volumes:
   postgres_data:
