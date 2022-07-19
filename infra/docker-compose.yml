@@ -35,7 +35,7 @@ services:
       - fronted
 
   frontend:
-    image: greengnom1/foodgram_fronted:latest
+    image: greengnom1/foodgram_fronted:v13.07.2022
     ports:
       - "80:80"
     volumes:

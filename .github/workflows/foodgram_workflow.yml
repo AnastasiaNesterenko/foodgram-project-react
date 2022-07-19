@@ -55,12 +55,13 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
+        stack_file_name: docker-compose.yaml
         script: |
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:v13.07.2022
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
           sudo docker-compose stop
-#          sudo docker-compose rm backend
-#          sudo docker-compose rm frontend
+          sudo docker-compose rm backend
+          sudo docker-compose rm frontend
           rm .env
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
