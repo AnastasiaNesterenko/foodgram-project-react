@@ -32,6 +32,7 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
     restart: always
     depends_on:
+      - backend
       - fronted
 
   frontend:
