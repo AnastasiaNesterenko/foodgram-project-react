@@ -56,7 +56,6 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         stack_file_name: docker-compose.yaml
-
         script: |
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
