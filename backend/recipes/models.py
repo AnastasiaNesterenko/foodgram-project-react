@@ -49,10 +49,10 @@ class Ingredient(models.Model):
         ordering = ['name']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        # constraints = [
-        #     models.UniqueConstraint(fields=['name', 'measurement_unit'],
-        #                             name='unique ingredient')
-        # ]
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'measurement_unit'],
+                                    name='unique ingredient')
+        ]
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}.'
@@ -139,12 +139,12 @@ class IngredientAmount(models.Model):
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
         ordering = ['-id']
-        # constraints = (
-        #     models.UniqueConstraint(
-        #         fields=('ingredient', 'recipe',),
-        #         name='unique ingredient amount',
-        #     ),
-        # )
+        constraints = (
+            models.UniqueConstraint(
+                fields=('ingredient', 'recipe',),
+                name='unique ingredient amount',
+            ),
+        )
 
 
 class FavoriteRecipe(models.Model):
