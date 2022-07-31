@@ -64,6 +64,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_foodgram.wsgi.application'
 
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE',
