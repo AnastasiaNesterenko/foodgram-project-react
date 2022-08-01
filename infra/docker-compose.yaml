@@ -10,8 +10,6 @@ services:
 
   frontend:
     image: greengnom1/foodgram_frontend:v13.07.2022
-    ports:
-      - "80:80"
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -19,6 +17,8 @@ services:
 
   backend:
     image: greengnom1/foodgram_backend:latest
+    expose:
+      - 8000
     restart: always
     volumes:
       - static_value:/app/backend_static/
@@ -37,7 +37,7 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - static_value:/app/backend_static/
       - media_value:/app/backend_media/
-      - ../docs/:/usr/share/nginx/html/api/docs/
+      - ../docs:/usr/share/nginx/html/api/docs/
     restart: always
     depends_on:
       - backend
