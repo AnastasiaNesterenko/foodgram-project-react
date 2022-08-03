@@ -9,13 +9,13 @@ router = DefaultRouter()
 router.register(r'users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
-    path('v1/users/subscriptions/',
+    path('users/subscriptions/',
          FollowListViewSet.as_view(),
          name='subscriptions'),
-    path('v1/users/<int:user_id>/subscribe/',
+    path('users/<int:user_id>/subscribe/',
          FollowApiView.as_view(),
          name='subscribe'),
-    path('v1/', include(router.urls)),
-    path('v1/auth/', include('djoser.urls')),
-    path('v1/auth/', include('djoser.urls.authtoken')),
+    path('', include(router.urls)),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
