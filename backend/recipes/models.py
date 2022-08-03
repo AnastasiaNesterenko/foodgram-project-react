@@ -2,7 +2,6 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from users.models import User
-from .validators import characters_validator
 
 
 class Tag(models.Model):
@@ -36,8 +35,7 @@ class Tag(models.Model):
         max_length=200,
         unique=True,
         null=True,
-        blank=True,
-        validators=[characters_validator]
+        blank=True
     )
 
     class Meta:
