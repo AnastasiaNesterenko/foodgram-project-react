@@ -6,6 +6,19 @@ from .validators import characters_validator
 
 
 class Tag(models.Model):
+    BLUE = '#0000FF'
+    ORANGE = '#FFA500'
+    GREEN = '#008000'
+    PURPLE = '#800080'
+    YELLOW = '#FFFF00'
+
+    COLOR_CHOICES = [
+        (BLUE, 'Синий'),
+        (ORANGE, 'Оранжевый'),
+        (GREEN, 'Зеленый'),
+        (PURPLE, 'Фиолетовый'),
+        (YELLOW, 'Желтый'),
+    ]
     name = models.CharField(
         max_length=200,
         unique=True,
@@ -16,7 +29,8 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Цвет тега',
         null=True,
-        blank=True
+        blank=True,
+        choices=COLOR_CHOICES
     )
     slug = models.CharField(
         max_length=200,
