@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -68,8 +69,20 @@ class RecipeListSerializer(serializers.ModelSerializer):
         return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
 
 
-class IngredientsEditSerializer(serializers.ModelSerializer):
+class RecipeImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        image_url = obj.image.url
+        return request.build_absolute_uri(image_url)
+
+
+class IngredientsEditSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     amount = serializers.IntegerField()
 
@@ -79,6 +92,7 @@ class IngredientsEditSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(use_url=True, max_length=None)
     tags = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Tag.objects.all())
