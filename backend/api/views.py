@@ -7,10 +7,10 @@ from reportlab.pdfgen import canvas
 
 from rest_framework import viewsets, views, status
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import (CartSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeListSerializer,
@@ -22,7 +22,7 @@ from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPageNumberPagination
     permission_classes = (IsOwnerOrReadOnly,)
 
     def get_serializer_class(self):
