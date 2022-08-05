@@ -89,6 +89,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class DownloadShoppingCart(views.APIView):
     permission_classes = (IsAuthenticated, )
+    pagination_class = None
 
     def get(self, request):
         final_list = {}
