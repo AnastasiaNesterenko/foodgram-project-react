@@ -27,6 +27,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly,)
     filter_class = RecipeFilter
 
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Recipe.objects.all()
+        user = get_object_or_404(User, id=self.request.user.id)
+        return Recipe.recipe_objects.with_favorited_shopping_cart(user=user)
+
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return RecipeListSerializer
@@ -49,8 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["POST"],
-            permission_classes=[IsAuthenticated],
-            pagination_class=None)
+            permission_classes=[IsAuthenticated],)
     def favorite(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=FavoriteRecipeSerializer)
@@ -61,8 +66,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request=request, pk=pk, model=FavoriteRecipe)
 
     @action(detail=True, methods=["POST"],
-            permission_classes=[IsAuthenticated],
-            pagination_class=None)
+            permission_classes=[IsAuthenticated],)
     def shopping_cart(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=CartSerializer)
