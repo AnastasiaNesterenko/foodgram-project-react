@@ -5,7 +5,9 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
-                            IngredientAmount, Cart, Tag)
+                            IngredientAmount, Tag)
+# from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+#                             IngredientAmount, Cart, Tag)
 from users.serializers import CustomUserSerializer
 
 

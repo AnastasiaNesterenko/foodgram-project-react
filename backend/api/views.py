@@ -13,9 +13,12 @@ from rest_framework.response import Response
 from .filters import AuthorAndTagFilter, IngredientSearchFilter
 from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
-from .serializers import (CartSerializer, FavoriteRecipeSerializer,
+from .serializers import (FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeListSerializer,
                           RecipeSerializer, TagSerializer)
+# from .serializers import (CartSerializer, FavoriteRecipeSerializer,
+#                           IngredientSerializer, RecipeListSerializer,
+#                           RecipeSerializer, TagSerializer)
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             IngredientAmount, Cart, Tag)
 
