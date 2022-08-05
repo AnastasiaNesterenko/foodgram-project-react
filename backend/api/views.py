@@ -59,11 +59,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.delete_method_for_actions(
             request=request, pk=pk, model=FavoriteRecipe)
 
-    @action(detail=True, methods=["POST"],
+    # @action(detail=True, methods=["POST"],
+    #         permission_classes=[IsAuthenticated])
+    # def shopping_cart(self, request, pk):
+    #     return self.post_method_for_actions(
+    #         request=request, pk=pk, serializers=CartSerializer)
+
+    @action(detail=True, methods=['get', 'delete'],
             permission_classes=[IsAuthenticated])
-    def shopping_cart(self, request, pk):
-        return self.post_method_for_actions(
-            request=request, pk=pk, serializers=CartSerializer)
+    def shopping_cart(self, request, pk=None):
+        if request.method == 'GET':
+            return self.add_obj(Cart, request.user, pk)
+        elif request.method == 'DELETE':
+            return self.delete_obj(Cart, request.user, pk)
+        return None
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):

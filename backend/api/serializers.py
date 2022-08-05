@@ -179,21 +179,21 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         ).data
 
 
-class CartSerializer(FavoriteRecipeSerializer):
-    class Meta(FavoriteRecipeSerializer.Meta):
-        model = Cart
-        fields = ('id', 'user', 'recipe')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Cart.objects.all(),
-                fields=('user', 'recipe'),
-                message='Рецепт уже добавлен в список покупок'
-            )
-        ]
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        return ShortRecipeSerializer(
-            instance.recipe,
-            context={'request': request}
-        ).data
+# class CartSerializer(FavoriteRecipeSerializer):
+#     class Meta(FavoriteRecipeSerializer.Meta):
+#         model = Cart
+#         fields = ('id', 'user', 'recipe')
+#         validators = [
+#             UniqueTogetherValidator(
+#                 queryset=Cart.objects.all(),
+#                 fields=('user', 'recipe'),
+#                 message='Рецепт уже добавлен в список покупок'
+#             )
+#         ]
+#
+#     def to_representation(self, instance):
+#         request = self.context.get('request')
+#         return ShortRecipeSerializer(
+#             instance.recipe,
+#             context={'request': request}
+#         ).data
