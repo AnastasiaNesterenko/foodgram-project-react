@@ -22,17 +22,17 @@ from users.models import User
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    # queryset = Recipe.objects.all()
+    queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = CustomPageNumberPagination
     permission_classes = (IsOwnerOrReadOnly,)
     filter_class = RecipeFilter
 
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Recipe.objects.all()
-        user = get_object_or_404(User, id=self.request.user.id)
-        return Recipe.recipe_objects.with_favorited_shopping_cart(user=user)
+    # def get_queryset(self):
+    #     if not self.request.user.is_authenticated:
+    #         return Recipe.objects.all()
+    #     user = get_object_or_404(User, id=self.request.user.id)
+    #     return Recipe.recipe_objects.with_favorited_shopping_cart(user=user)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -55,16 +55,49 @@ class RecipeViewSet(viewsets.ModelViewSet):
         model_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def add_to_favorite(self, request, recipe):
+        try:
+            FavoriteRecipe.objects.create(user=request.user, recipe=recipe)
+        except IntegrityError:
+            return Response(
+                {ERRORS_KEY: FAVORITE_ALREADY_EXISTS},
+                status=HTTP_400_BAD_REQUEST,
+            )
+        serializer = ShortRecipeSerializer(recipe)
+        return Response(
+            serializer.data,
+            status=HTTP_201_CREATED,
+        )
+
+    def delete_from_favorite(self, request, recipe):
+        favorite = Favorite.objects.filter(user=request.user, recipe=recipe)
+        if not favorite.exists():
+            return Response(
+                {ERRORS_KEY: FAVORITE_DONT_EXIST},
+                status=HTTP_400_BAD_REQUEST,
+            )
+        favorite.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+
     @action(detail=True, methods=["POST"],
             permission_classes=[IsAuthenticated],)
     def favorite(self, request, pk):
-        return self.post_method_for_actions(
-            request=request, pk=pk, serializers=FavoriteRecipeSerializer)
+        return self.add_to_favorite(request, recipe)
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        return self.delete_method_for_actions(
-            request=request, pk=pk, model=FavoriteRecipe)
+        return self.delete_from_favorite(request, recipe)
+
+    # @action(detail=True, methods=["POST"],
+    #         permission_classes=[IsAuthenticated],)
+    # def favorite(self, request, pk):
+    #     return self.post_method_for_actions(
+    #         request=request, pk=pk, serializers=FavoriteRecipeSerializer)
+    #
+    # @favorite.mapping.delete
+    # def delete_favorite(self, request, pk):
+    #     return self.delete_method_for_actions(
+    #         request=request, pk=pk, model=FavoriteRecipe)
 
     @action(detail=True, methods=["POST"],
             permission_classes=[IsAuthenticated],)
