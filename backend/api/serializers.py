@@ -4,10 +4,10 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
-                            IngredientAmount, Tag)
 # from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
-#                             IngredientAmount, Cart, Tag)
+#                             IngredientAmount, Tag)
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            IngredientAmount, Cart, Tag)
 from users.serializers import CustomUserSerializer
 
 
@@ -181,21 +181,21 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         ).data
 
 
-# class CartSerializer(FavoriteRecipeSerializer):
-#     class Meta(FavoriteRecipeSerializer.Meta):
-#         model = Cart
-#         fields = ('id', 'user', 'recipe')
-#         validators = [
-#             UniqueTogetherValidator(
-#                 queryset=Cart.objects.all(),
-#                 fields=('user', 'recipe'),
-#                 message='Рецепт уже добавлен в список покупок'
-#             )
-#         ]
-#
-#     def to_representation(self, instance):
-#         request = self.context.get('request')
-#         return ShortRecipeSerializer(
-#             instance.recipe,
-#             context={'request': request}
-#         ).data
+class CartSerializer(FavoriteRecipeSerializer):
+    class Meta(FavoriteRecipeSerializer.Meta):
+        model = Cart
+        fields = ('id', 'user', 'recipe')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Cart.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в список покупок'
+            )
+        ]
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return ShortRecipeSerializer(
+            instance.recipe,
+            context={'request': request}
+        ).data
