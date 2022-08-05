@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import AuthorAndTagFilter, IngredientSearchFilter
+from .filters import RecipeFilter, IngredientSearchFilter
 from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import (CartSerializer, FavoriteRecipeSerializer,
@@ -25,7 +25,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = CustomPageNumberPagination
     permission_classes = (IsOwnerOrReadOnly,)
-    filter_class = AuthorAndTagFilter
+    filter_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -49,7 +49,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["POST"],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            pagination_class = None)
     def favorite(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=FavoriteRecipeSerializer)
@@ -60,7 +61,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request=request, pk=pk, model=FavoriteRecipe)
 
     @action(detail=True, methods=["POST"],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            pagination_class = None)
     def shopping_cart(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=CartSerializer)
