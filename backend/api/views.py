@@ -50,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"],
             permission_classes=[IsAuthenticated],
-            pagination_class = None)
+            pagination_class=None)
     def favorite(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=FavoriteRecipeSerializer)
@@ -62,7 +62,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"],
             permission_classes=[IsAuthenticated],
-            pagination_class = None)
+            pagination_class=None)
     def shopping_cart(self, request, pk):
         return self.post_method_for_actions(
             request=request, pk=pk, serializers=CartSerializer)
