@@ -6,9 +6,10 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 from rest_framework import viewsets, views, status
-from rest_framework.decorators import action
+# from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .filters import AuthorAndTagFilter, IngredientSearchFilter
 from .pagination import CustomPageNumberPagination
@@ -134,8 +135,10 @@ class FavoriteApiView(APIView):
             'recipe': favorite_id,
             'user': user.id
         }
-        serializer = FavoriteRecipeSerializer(data=data,
-                                        context={'request': request})
+        serializer = FavoriteRecipeSerializer(
+            data=data,
+            context={'request': request}
+        )
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
@@ -161,8 +164,10 @@ class ShoppingView(APIView):
             'user': user.id
         }
         context = {'request': request}
-        serializer = CartSerializer(data=data,
-                                            context=context)
+        serializer = CartSerializer(
+            data=data,
+            context=context
+        )
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
