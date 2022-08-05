@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 
@@ -13,12 +14,15 @@ from rest_framework.response import Response
 from .filters import RecipeFilter, IngredientSearchFilter
 from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
-from .serializers import (CartSerializer, FavoriteRecipeSerializer,
+# from .serializers import (CartSerializer, FavoriteRecipeSerializer,
+#                           IngredientSerializer, RecipeListSerializer,
+#                           RecipeSerializer, TagSerializer)
+from .serializers import (CartSerializer, ShortRecipeSerializer,
                           IngredientSerializer, RecipeListSerializer,
                           RecipeSerializer, TagSerializer)
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             IngredientAmount, Cart, Tag)
-from users.models import User
+# from users.models import User
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -60,32 +64,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
             FavoriteRecipe.objects.create(user=request.user, recipe=recipe)
         except IntegrityError:
             return Response(
-                {ERRORS_KEY: FAVORITE_ALREADY_EXISTS},
-                status=HTTP_400_BAD_REQUEST,
+                {'errors': 'Подписки не существует!'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         serializer = ShortRecipeSerializer(recipe)
         return Response(
             serializer.data,
-            status=HTTP_201_CREATED,
+            status=status.HTTP_201_CREATED,
         )
 
     def delete_from_favorite(self, request, recipe):
-        favorite = FavoriteRecipe.objects.filter(user=request.user, recipe=recipe)
+        favorite = FavoriteRecipe.objects.filter(
+            user=request.user, recipe=recipe
+        )
         if not favorite.exists():
             return Response(
-                {ERRORS_KEY: FAVORITE_DONT_EXIST},
-                status=HTTP_400_BAD_REQUEST,
+                {'errors': 'Подписки не существует!'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         favorite.delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["POST"],
             permission_classes=[IsAuthenticated],)
     def favorite(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
         return self.add_to_favorite(request, recipe)
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
         return self.delete_from_favorite(request, recipe)
 
     # @action(detail=True, methods=["POST"],
