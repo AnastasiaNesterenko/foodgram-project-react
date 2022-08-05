@@ -70,7 +70,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     def delete_from_favorite(self, request, recipe):
-        favorite = Favorite.objects.filter(user=request.user, recipe=recipe)
+        favorite = FavoriteRecipe.objects.filter(user=request.user, recipe=recipe)
         if not favorite.exists():
             return Response(
                 {ERRORS_KEY: FAVORITE_DONT_EXIST},
