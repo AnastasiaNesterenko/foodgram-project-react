@@ -22,7 +22,7 @@ from users.models import User
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = CustomPageNumberPagination
     permission_classes = (IsOwnerOrReadOnly,)
