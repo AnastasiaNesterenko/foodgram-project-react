@@ -22,7 +22,6 @@ from .serializers import (CartSerializer, ShortRecipeSerializer,
                           RecipeSerializer, TagSerializer)
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             IngredientAmount, Cart, Tag)
-# from users.models import User
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
