@@ -6,6 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             IngredientAmount, Cart, Tag)
+from users.models import Follow
 from users.serializers import CustomUserSerializer
 
 
@@ -57,18 +58,18 @@ class RecipeListSerializer(serializers.ModelSerializer):
                   'cooking_time')
         model = Recipe
 
-    # def get_is_favorited(self, obj):
-    #     user = self.context.get('request').user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Recipe.objects.filter(
-    #     favorites__user=user, id=obj.id).exists()
-    #
-    # def get_is_in_shopping_cart(self, obj):
-    #     user = self.context.get('request').user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Recipe.objects.filter(
+        favorites__user=user, id=obj.id).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
 
 
 class IngredientsEditSerializer(serializers.ModelSerializer):
@@ -159,42 +160,74 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FavoriteRecipeSerializer(serializers.ModelSerializer):
+class FollowSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ('user', 'recipe')
-        model = FavoriteRecipe
-        validators = [
-            UniqueTogetherValidator(
-                queryset=FavoriteRecipe.objects.all(),
-                fields=('user', 'recipe'),
-                message='Рецепт уже добавлен в избранное'
-            )
-        ]
+        model = Follow
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
 
-    def to_representation(self, instance):
+    def get_is_subscribed(self, obj):
+        return Follow.objects.filter(
+            user=obj.user, author=obj.author
+        ).exists()
+
+    def get_recipes(self, obj):
         request = self.context.get('request')
-        return ShortRecipeSerializer(
-            instance.recipe,
-            context={'request': request}
-        ).data
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return ShortRecipeSerializer(queryset, many=True).data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()
 
 
-class CartSerializer(FavoriteRecipeSerializer):
-    class Meta(FavoriteRecipeSerializer.Meta):
-        model = Cart
-        fields = ('id', 'user', 'recipe')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Cart.objects.all(),
-                fields=('user', 'recipe'),
-                message='Рецепт уже добавлен в список покупок'
-            )
-        ]
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        return ShortRecipeSerializer(
-            instance.recipe,
-            context={'request': request}
-        ).data
+# class FavoriteRecipeSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         fields = ('user', 'recipe')
+#         model = FavoriteRecipe
+#         validators = [
+#             UniqueTogetherValidator(
+#                 queryset=FavoriteRecipe.objects.all(),
+#                 fields=('user', 'recipe'),
+#                 message='Рецепт уже добавлен в избранное'
+#             )
+#         ]
+#
+#     def to_representation(self, instance):
+#         request = self.context.get('request')
+#         return ShortRecipeSerializer(
+#             instance.recipe,
+#             context={'request': request}
+#         ).data
+#
+#
+# class CartSerializer(FavoriteRecipeSerializer):
+#     class Meta(FavoriteRecipeSerializer.Meta):
+#         model = Cart
+#         fields = ('id', 'user', 'recipe')
+#         validators = [
+#             UniqueTogetherValidator(
+#                 queryset=Cart.objects.all(),
+#                 fields=('user', 'recipe'),
+#                 message='Рецепт уже добавлен в список покупок'
+#             )
+#         ]
+#
+#     def to_representation(self, instance):
+#         request = self.context.get('request')
+#         return ShortRecipeSerializer(
+#             instance.recipe,
+#             context={'request': request}
+#         ).data
