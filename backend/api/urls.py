@@ -1,8 +1,9 @@
 from django.urls import include, path
 
-from .views import (DownloadShoppingCart,
+from .views import (DownloadShoppingCart, FavoriteApiView,
                     IngredientViewSet,
-                    RecipeViewSet, TagViewSet)
+                    RecipeViewSet, ShoppingView,
+                    TagViewSet)
 
 from rest_framework.routers import DefaultRouter
 
@@ -19,4 +20,6 @@ urlpatterns = [
     path('recipes/download_shopping_cart/',
          DownloadShoppingCart.as_view(), name='download'),
     path('', include(router.urls)),
+    path('recipes/<int:favorite_id>/favorite/', FavoriteApiView.as_view()),
+    path('recipes/<int:recipe_id>/shopping_cart/', ShoppingView.as_view()),
 ]
