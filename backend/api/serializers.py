@@ -72,9 +72,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, queryset, value):
         if value:
             return queryset.filter(
-                favorite__user=self.request.user)
+                favoriterecipe__user=self.request.user)
         return queryset.exclude(
-            favorite__user=self.request.user)
+            favoriterecipe__user=self.request.user)
 
     # def get_is_in_shopping_cart(self, obj):
     #     user = self.context.get('request').user
