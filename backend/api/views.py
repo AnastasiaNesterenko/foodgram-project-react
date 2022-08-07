@@ -27,7 +27,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly,)
     filter_class = RecipeFilter
 
-
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return RecipeListSerializer
