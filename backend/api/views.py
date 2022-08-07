@@ -16,7 +16,7 @@ from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 # from .serializers import (CartSerializer, FavoriteRecipeSerializer,
 #                           IngredientSerializer, RecipeListSerializer,
 #                           RecipeSerializer, TagSerializer)
-from .serializers import (IngredientSerializer, RecipeListSerializer,
+from .serializers import (IngredientSerializer,
                           RecipeSerializer, TagSerializer,
                           ShortRecipeSerializer)
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
