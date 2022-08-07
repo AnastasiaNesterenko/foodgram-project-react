@@ -61,8 +61,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Recipe.objects.filter(
-            favoriterecipe__user=user, id=obj.id).exists()
+        # return Recipe.objects.filter(
+        #     favorite__user=user, id=obj.id).exists()
+        return queryset.exclude(favorite__user=user)
         # request = self.context.get('request')
         # if not request or request.user.is_anonymous:
         #     return False
