@@ -34,8 +34,6 @@ class Tag(models.Model):
     slug = models.CharField(
         max_length=200,
         unique=True,
-        null=True,
-        blank=True
     )
 
     class Meta:
