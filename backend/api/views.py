@@ -35,8 +35,8 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    pagination_class = LimitPageNumberPagination
-    filter_class = AuthorAndTagFilter
+    pagination_class = CustomPageNumberPagination
+    filter_class = RecipeFilter
     permission_classes = [IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
