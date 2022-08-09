@@ -96,24 +96,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
 
     def validate(self, data):
-        # ingredients = data['ingredients']
-        # ingredient_list = []
-        # for items in ingredients:
-        #     ingredient = get_object_or_404(
-        #         Ingredient, id=items['id'])
-        #     if ingredient in ingredient_list:
-        #         raise serializers.ValidationError(
-        #             'Ингредиент должен быть уникальным!')
-        #     ingredient_list.append(ingredient)
-        # tags = data['tags']
-        # if not tags:
-        #     raise serializers.ValidationError(
-        #         'Нужен хотя бы один тег для рецепта!')
-        # for tag_name in tags:
-        #     if not Tag.objects.filter(name=tag_name).exists():
-        #         raise serializers.ValidationError(
-        #             f'Тега {tag_name} не существует!')
-        # return data
         ingredients = data['ingredients']
         if not ingredients:
             raise serializers.ValidationError({
