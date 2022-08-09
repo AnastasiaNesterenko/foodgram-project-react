@@ -7,11 +7,11 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from users.models import User, Follow
-from users.serializers import CustomUserCreateSerializer, FollowSerializer
+from users.serializers import CustomUserSerializer, FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
-    serializer_class = CustomUserCreateSerializer
+    serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     permission_classes = (permissions.IsAuthenticated, )
 
