@@ -99,7 +99,7 @@ class Recipe(models.Model):
         verbose_name='Теги',
         help_text='Выберите тег',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         help_text='Напишите время готовки в минутах',
         validators=[
             MinValueValidator(
@@ -134,7 +134,7 @@ class IngredientAmount(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         default=1,
         validators=[
             MinValueValidator(
